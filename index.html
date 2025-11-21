@@ -1,78 +1,140 @@
-﻿<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | DLX Template</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-    <script type="text/javascript" src="TemplateData/scorm.js"></script>
-  </head>
-  <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas"></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
-        </div>
-      </div>
-      <div id="unity-mobile-warning">
-        WebGL builds are not supported on mobile devices.
-      </div>
-      <div id="unity-footer">
-        <div id="unity-fullscreen-button"></div>
-      </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Rollgi Access Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        body {
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          display: flex;
+          min-height: 100vh;
+          align-items: center;
+          justify-content: center;
+          background: #0f172a;
+          color: #e5e7eb;
+          margin: 0;
+        }
+        .card {
+          background: #020617;
+          border-radius: 1rem;
+          padding: 2rem;
+          max-width: 400px;
+          width: 100%;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+          border: 1px solid #1f2937;
+        }
+        h1 {
+          margin-top: 0;
+          margin-bottom: 0.75rem;
+          font-size: 1.5rem;
+          text-align: center;
+        }
+        p {
+          margin-top: 0;
+          margin-bottom: 1.25rem;
+          font-size: 0.9rem;
+          text-align: center;
+          color: #9ca3af;
+        }
+        label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-size: 0.9rem;
+        }
+        input[type="password"] {
+          width: 100%;
+          padding: 0.6rem 0.75rem;
+          border-radius: 0.5rem;
+          border: 1px solid #374151;
+          background: #020617;
+          color: #e5e7eb;
+          font-size: 1rem;
+          box-sizing: border-box;
+        }
+        input[type="password"]:focus {
+          outline: none;
+          border-color: #60a5fa;
+        }
+        button {
+          width: 100%;
+          margin-top: 0.75rem;
+          padding: 0.6rem 0.75rem;
+          border-radius: 0.5rem;
+          border: none;
+          background: #3b82f6;
+          color: white;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+        }
+        button:hover {
+          background: #2563eb;
+        }
+        .error {
+          margin-top: 0.5rem;
+          font-size: 0.85rem;
+          color: #f97373;
+        }
+        .nav {
+          margin-top: 1.5rem;
+          display: none; /* hidden until PIN is correct */
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        .nav button {
+          width: 100%;
+          text-align: left;
+          font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Access Portal</h1>
+    <p>Enter the PIN to unlock the builds and dashboard.</p>
+
+    <label for="pinInput">PIN</label>
+    <input
+            type="password"
+            id="pinInput"
+            autocomplete="off"
+            placeholder="Enter PIN"
+            onkeydown="if(event.key === 'Enter') checkPin();"
+    />
+    <button onclick="checkPin()">Unlock</button>
+    <div id="error" class="error"></div>
+
+    <div id="nav" class="nav">
+        <button onclick="goTo('build-a/')">Unity Build A</button>
+        <button onclick="goTo('build-b/')">Unity Build B</button>
+        <button onclick="goTo('dashboard/')">Dashboard</button>
     </div>
-    <script>
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/Builds.loader.js";
-      var config = {
-        dataUrl: buildUrl + "/Builds.data",
-        frameworkUrl: buildUrl + "/Builds.framework.js",
-        codeUrl: buildUrl + "/Builds.wasm",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "VARLab",
-        productName: "DLX Template",
-        productVersion: "1.0.0",
-      };
+</div>
 
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-      var mobileWarning = document.querySelector("#unity-mobile-warning");
+<script>
+    const CORRECT_PIN = "1234"; // TODO: change this to your PIN
 
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        container.className = "unity-mobile";
-        config.devicePixelRatio = 1;
-        mobileWarning.style.display = "block";
-        setTimeout(() => {
-          mobileWarning.style.display = "none";
-        }, 5000);
+    function checkPin() {
+      const input = document.getElementById("pinInput");
+      const error = document.getElementById("error");
+      const nav = document.getElementById("nav");
+
+      if (input.value === CORRECT_PIN) {
+        error.textContent = "";
+        nav.style.display = "flex";    // show the buttons
+        input.disabled = true;         // lock the field (optional)
       } else {
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+        error.textContent = "Incorrect PIN. Try again.";
+        nav.style.display = "none";
       }
-      loadingBar.style.display = "block";
+    }
 
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => { 
-             window.unityInstance = unityInstance;
-          loadingBar.style.display = "none";
-          fullscreenButton.onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
-        }).catch((message) => {
-          alert(message);
-        });
-      };
-      document.body.appendChild(script);
-    </script>
-  </body>
+    function goTo(path) {
+      // path examples: "build-a/", "build-b/", "dashboard/"
+      window.location.href = path;
+    }
+</script>
+</body>
 </html>
