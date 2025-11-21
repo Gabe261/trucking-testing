@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Rollgi Access Portal</title>
+    <title>CCSIF Trucking Portal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         body {
@@ -92,48 +92,58 @@
 </head>
 <body>
 <div class="card">
-    <h1>Access Portal</h1>
-    <p>Enter the PIN to unlock the builds and dashboard.</p>
+    <h1>CCSIF Trucking Portal</h1>
 
-    <label for="pinInput">PIN</label>
+    <label for="pinInput">Password</label>
     <input
             type="password"
             id="pinInput"
             autocomplete="off"
-            placeholder="Enter PIN"
+            placeholder="Enter Password"
             onkeydown="if(event.key === 'Enter') checkPin();"
     />
-    <button onclick="checkPin()">Unlock</button>
     <div id="error" class="error"></div>
 
     <div id="nav" class="nav">
-        <button onclick="goTo('build-a/')">Unity Build A</button>
-        <button onclick="goTo('build-b/')">Unity Build B</button>
+        <button onclick="goTo('build-a/')">Module A</button>
+        <button onclick="goTo('build-b/')">Module B</button>
         <button onclick="goTo('dashboard/')">Dashboard</button>
     </div>
 </div>
 
 <script>
-    const CORRECT_PIN = "1234"; // TODO: change this to your PIN
+    const CORRECT_PIN = "1234"; // Change me
+    let isUnlocked = false;
 
     function checkPin() {
-      const input = document.getElementById("pinInput");
-      const error = document.getElementById("error");
-      const nav = document.getElementById("nav");
+        const input = document.getElementById("pinInput");
+        const error = document.getElementById("error");
 
-      if (input.value === CORRECT_PIN) {
-        error.textContent = "";
-        nav.style.display = "flex";    // show the buttons
-        input.disabled = true;         // lock the field (optional)
-      } else {
-        error.textContent = "Incorrect PIN. Try again.";
-        nav.style.display = "none";
-      }
+        if (input.value === CORRECT_PIN) {
+            isUnlocked = true;
+            error.textContent = "";
+        } else {
+            isUnlocked = false;
+            error.textContent = "Incorrect password.";
+        }
     }
 
     function goTo(path) {
-      // path examples: "build-a/", "build-b/", "dashboard/"
-      window.location.href = path;
+        const input = document.getElementById("pinInput");
+        const error = document.getElementById("error");
+
+        // Check password before navigating
+        if (input.value === CORRECT_PIN) {
+            isUnlocked = true;
+        }
+
+        if (!isUnlocked) {
+            error.textContent = "Please enter the correct password first.";
+            return;
+        }
+
+        // Navigate only if unlocked
+        window.location.href = path;
     }
 </script>
 </body>
